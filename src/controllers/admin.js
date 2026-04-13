@@ -51,34 +51,50 @@ export const approveUser = async (req, res) => {
     const { id } = req.params;
 
     const user = await User.findById(id);
-
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
     if (user.status === "approved") {
-      return res.status(200).json({ message: "User is already approved" });
+      return res.status(200).json({ message: "Already approved" });
     }
+
     if (user.status === "rejected") {
       return res.status(400).json({ message: "Rejected user cannot be approved" });
     }
+
+    // ✅ Update status
     user.status = "approved";
     await user.save();
 
-    if (user.role === "teacher" && (await Teacher.findOne({ userId: user._id })) === null) {
-      await Teacher.create({
-        userId: user._id,
-      });
+    // ✅ Role based document create
+    if (user.role === "teacher") {
+      const existing = await Teacher.findOne({ userId: user._id });
+      if (!existing) {
+        await Teacher.create({
+          userId: user._id,
+          profilePicture: "",
+          phone: "",
+        });
+      }
     }
 
-    if (user.role === "student" && (await Student.findOne({ userId: user._id })) === null) {
-      await Student.create({
-        userId: user._id,
-      });
+    if (user.role === "student") {
+      const existing = await Student.findOne({ userId: user._id });
+      if (!existing) {
+        await Student.create({
+          userId: user._id,
+        });
+      }
     }
-    if (user.role === "admin" && (await Admin.findOne({ userId: user._id })) === null) {
-      await Admin.create({
-        userId: user._id,
-      });
+
+    if (user.role === "admin") {
+      const existing = await Admin.findOne({ userId: user._id });
+      if (!existing) {
+        await Admin.create({
+          userId: user._id,
+        });
+      }
     }
 
     res.status(200).json({

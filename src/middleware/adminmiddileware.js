@@ -9,7 +9,7 @@ export const adminMiddleware = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.userId);
 
-    if (!user) return res.status(401).json({ message: 'User not found' });
+    if (!user) return res.status(401).json({ message: 'User is not admin for this action' });
 
     if (user.role !== 'admin') {
       return res.status(403).json({ message: 'Access denied' });
