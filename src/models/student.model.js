@@ -8,6 +8,7 @@ const StudentSchema = new mongoose.Schema(
       required: true,
     },
 
+    // Basic Info
     profilePicture: String,
     gender: String,
     phone: String,
@@ -15,43 +16,24 @@ const StudentSchema = new mongoose.Schema(
     address: String,
     dateOfBirth: Date,
 
-    classInfo: {
-      className: String,
-      section: String,
-      rollNumber: String,
+    // Class Relation (IMPORTANT)
+    classId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Classes",
     },
 
-    subjects: [String],
+    section: String,
+    rollNumber: String,
 
-    attendance: [
+    // Subjects (relation)
+    subjects: [
       {
-        date: Date,
-        status: String,
-        enum: ["present", "absent", "late", "leave", "half-day"],
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Subjects",
       },
     ],
 
-    results: [
-      {
-        subject: String,
-        marks: Number,
-        totalMarks: Number,
-        examType: String,
-      },
-    ],
-
-    fee: [
-      {
-        month: String,
-        amount: Number,
-        status: String,
-        enum: ["paid", "unpaid"],
-        date: Date,
-        feeMethod: String,
-        enum: ["bank transfer", "check", "cash", "mobile payment"],
-      },
-    ],
-
+    // Parent Info
     parent: {
       name: String,
       phone: String,
@@ -61,13 +43,13 @@ const StudentSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      default: "approved",
+      enum: ["active", "inactive"],
+      default: "active",
     },
   },
   { timestamps: true },
 );
 
-const Student =
-  mongoose.models.Students || mongoose.model("Students", StudentSchema);
+const Student = mongoose.models.Students || mongoose.model("Students", StudentSchema);
 
 export default Student;

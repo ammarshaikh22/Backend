@@ -1,79 +1,93 @@
 import mongoose from "mongoose";
 
 const TeacherSchema = new mongoose.Schema(
-{
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Users",
-    required: true,
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+      required: true,
+    },
+
+    // Basic Info
+    profilePicture: String,
+    phone: String,
+    gender: String,
+    age: Number,
+    address: String,
+    dateOfBirth: Date,
+
+    // Subjects (Relation)
+    subjects: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Subjects",
+      },
+    ],
+
+    // Classes (Relation)
+    classes: [
+      {
+        classId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Classes",
+        },
+        section: String,
+      },
+    ],
+
+    // Education (can stay embedded ✅)
+    education: [
+      {
+        degree: String,
+        institute: String,
+        year: String,
+        grade: String,
+      },
+    ],
+
+    // Experience (can stay embedded ✅)
+    experience: [
+      {
+        school: String,
+        years: String,
+        role: String,
+        subjectsTaught: [String],
+        remarks: String,
+      },
+    ],
+
+    // Salary (ONLY basic info here)
+    salary: {
+      type: Number,
+    },
+
+    paymentType: {
+      type: String,
+      enum: ["monthly", "bi-weekly", "weekly"],
+    },
+
+    paymentMethod: {
+      type: String,
+      enum: ["bank transfer", "check", "cash", "mobile payment"],
+    },
+
+    // Performance
+    performance: {
+      rating: Number,
+      feedback: String,
+    },
+
+    joiningDate: Date,
+
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
   },
-
-  profilePicture: String,
-  phone: String,
-  gender: String,
-  age: Number,
-  address: String,
-  dateOfBirth: Date,
-
-  subjects: [String],
-
-  classes: [{
-    className: String,
-    section: String,
-    teachingSubject: String,
-  }],
-
-  education: [{
-    degree: String,
-    institute: String,
-    year: String,
-    grade: String,
-  }],
-
-  experience: [{
-    school: String,
-    years: String,
-    role: String,
-    subjectsTaught: [String],
-    remarks: String,
-  }],
-
-  salaryInfo: {
-    amount: Number,
-    paymentType: String, 
-    enum: ["monthly", "bi-weekly", "weekly"],
-    paymentMethod: String, 
-    enum: ["bank transfer", "check", "cash", "mobile payment"],
-    receivedSalary:[{
-      month: String,
-      amount: Number,
-      date: Date,
-      status: String,
-      enum: ["paid", "unpaid"],
-    }],
-  },
-
-
-  attendance: [{
-    date: Date,
-    status: String, 
-    enum: ["present", "absent", "late", "leave", "half-day"],
-  }],
-
-  performance: {
-    rating: Number,
-    feedback: String,
-  },
-
-  joiningDate: Date,
-
-  status: {
-    type: String,
-    default: "active",
-  }
-},
-{ timestamps: true }
+  { timestamps: true }
 );
 
 const Teacher = mongoose.models.Teachers || mongoose.model("Teachers", TeacherSchema);
+
 export default Teacher;
